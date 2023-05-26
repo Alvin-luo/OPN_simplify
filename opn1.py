@@ -229,13 +229,13 @@ def power(opn=(), n=2.0, out_accuracy=default_precision):
         sys.exit('不规范的次方\'{}\': 该运算规则power()仅支持整数次方!'.format(n))
     if n == 1:
         return opn
-    elif n < 0 and opn[0] + opn[1] == 1 and opn[0] != opn[1]:
+    elif n < 0 or opn[0] == -opn[1] or opn[0] == opn[1]:
         sys.exit('The multiplication inverse of this OPN {} does not exist'.format(opn))
     else:
-        head = (((-1) ** (n + 1)) / 2) * ((inverse_fun(opn[0]) + inverse_fun(opn[1])) ** n)
-        tail = 0.5 * ((inverse_fun(opn[0]) - inverse_fun(opn[1])) ** n)
-        first_entry = applied_fun(head + tail)
-        second_entry = applied_fun(head - tail)
+        head = (((-1) ** (n + 1)) / 2) * ((opn[0] + opn[1]) ** n)
+        tail = 0.5 * ((opn[0] - opn[1]) ** n)
+        first_entry = head + tail
+        second_entry = head - tail
         new_opn = (first_entry, second_entry)
         return new_opn
 
@@ -269,9 +269,10 @@ def root(opn=(), n=2.0, out_accuracy=default_precision):
 
 
 def square(opn=(), out_accuracy=default_precision):
-    head = -2 * inverse_fun(opn[0]) * inverse_fun(opn[1])
-    tail = -(inverse_fun(opn[0]) ** 2 + inverse_fun(opn[1]) ** 2)
-    new_opn = (applied_fun(head), applied_fun(tail))
+    head = -2 * opn[0] * opn[1]
+    tail = -opn[0] ** 2 - opn[1] ** 2
+    # tail = -(opn[0] ** 2 + opn[1] ** 2)
+    new_opn = (head, tail)
     return new_opn
 
 
