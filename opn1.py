@@ -229,7 +229,7 @@ def power(opn=(), n=2.0, out_accuracy=default_precision):
         sys.exit('不规范的次方\'{}\': 该运算规则power()仅支持整数次方!'.format(n))
     if n == 1:
         return opn
-    elif n < 0 or opn[0] == -opn[1] or opn[0] == opn[1]:
+    elif n < 0 and opn[0] == -opn[1] or opn[0] == opn[1]:
         sys.exit('The multiplication inverse of this OPN {} does not exist'.format(opn))
     else:
         head = (((-1) ** (n + 1)) / 2) * ((opn[0] + opn[1]) ** n)
