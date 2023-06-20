@@ -660,13 +660,4 @@ def lr_accuracy(dw, test_set, label_set, pri=False):
 
 """测试用例"""
 if __name__ == '__main__':
-    a = (-2, -5)
-    b = (2.5, 4)
-    print(exp(math.e, a))
-    print(e_exp(a))
-    print(log(math.e, a))
-    print(ln(a))
-    print(log(2, a))
-    print(sin(b))
-    print(cos(b))
-    print(tan(b))
+    pass
