@@ -280,9 +280,9 @@ def square(opn=(), out_accuracy=default_precision):
 
 
 def e_exp(opn=(), out_accuracy=default_precision):
-    head = (math.e ** inverse_fun(opn[0]) - math.e ** (-inverse_fun(opn[0]))) / (2 * (math.e ** inverse_fun(opn[1])))
-    tail = (math.e ** inverse_fun(opn[0]) + math.e ** (-inverse_fun(opn[0]))) / (2 * (math.e ** inverse_fun(opn[1])))
-    new_opn = (applied_fun(head), applied_fun(tail))
+    head = (math.e ** opn[0] - math.e ** (-opn[0])) / (2 * (math.e ** opn[1]))
+    tail = (math.e ** opn[0] + math.e ** (-opn[0])) / (2 * (math.e ** opn[1]))
+    new_opn = (head, tail)
     return new_opn
 
 
@@ -294,10 +294,10 @@ def exp(real_number, opn=(), out_accuracy=default_precision):
 
 
 def ln(opn=(), out_accuracy=default_precision):
-    if opn[0] + opn[1] < 1 and opn[0] > opn[1]:
-        head = 0.5 * math.log((inverse_fun(opn[1]) - inverse_fun(opn[0])) / (inverse_fun(opn[1]) + inverse_fun(opn[1])))
-        tail = -0.5 * math.log(inverse_fun(opn[1]) ** 2 - inverse_fun(opn[0]) ** 2)
-        new_opn = (applied_fun(head), applied_fun(tail))
+    if opn[0] + opn[1] < 0 and opn[0] > opn[1]:
+        head = 0.5 * math.log((opn[1] - opn[0]) / (opn[1] + opn[0]))
+        tail = -0.5 * math.log(opn[1] ** 2 - opn[0] ** 2)
+        new_opn = (head, tail)
         return new_opn
     else:
         sys.exit('Error: OPNs{} should be positive and '
@@ -315,26 +315,26 @@ def log(real_number, opn=(), out_accuracy=default_precision):
 
 
 def sin(opn=(), out_accuracy=default_precision):
-    head = math.sin(inverse_fun(opn[0])) * math.cos(inverse_fun(opn[1]))
-    tail = math.cos(inverse_fun(opn[0])) * math.sin(inverse_fun(opn[1]))
-    new_opn = (applied_fun(head), applied_fun(tail))
+    head = math.sin(opn[0]) * math.cos(opn[1])
+    tail = math.cos(opn[0]) * math.sin(opn[1])
+    new_opn = (head, tail)
     return new_opn
 
 
 def cos(opn=(), out_accuracy=default_precision):
-    head = math.sin(inverse_fun(opn[0])) * math.sin(inverse_fun(opn[1]))
-    tail = - math.cos(inverse_fun(opn[0])) * math.cos(inverse_fun(opn[1]))
-    new_opn = (applied_fun(head), applied_fun(tail))
+    head = math.sin(opn[0]) * math.sin(opn[1])
+    tail = - math.cos(opn[0]) * math.cos(opn[1])
+    new_opn = (head, tail)
     return new_opn
 
 
 def tan(opn=(), out_accuracy=default_precision):
-    head1 = math.sin(inverse_fun(opn[0])) * math.cos(inverse_fun(opn[0]))
-    head2 = math.sin(inverse_fun(opn[1])) * math.cos(inverse_fun(opn[1]))
-    tail1 = ((math.cos(inverse_fun(opn[0]))) ** 2) * ((math.cos(inverse_fun(opn[1]))) ** 2)
-    tail2 = ((math.sin(inverse_fun(opn[0]))) ** 2) * ((math.sin(inverse_fun(opn[1]))) ** 2)
-    first_entry = applied_fun(head1 / (tail1 - tail2))
-    second_entry = applied_fun(head2 / (tail1 - tail2))
+    head1 = math.sin(opn[0]) * math.cos(opn[0])
+    head2 = math.sin(opn[1]) * math.cos(opn[1])
+    tail1 = ((math.cos(opn[0])) ** 2) * ((math.cos(opn[1])) ** 2)
+    tail2 = ((math.sin(opn[0])) ** 2) * ((math.sin(opn[1])) ** 2)
+    first_entry = head1 / (tail1 - tail2)
+    second_entry = head2 / (tail1 - tail2)
     new_opn = (first_entry, second_entry)
     return new_opn
 
@@ -660,4 +660,13 @@ def lr_accuracy(dw, test_set, label_set, pri=False):
 
 """测试用例"""
 if __name__ == '__main__':
-    pass
+    a = (-2, -5)
+    b = (2.5, 4)
+    print(exp(math.e, a))
+    print(e_exp(a))
+    print(log(math.e, a))
+    print(ln(a))
+    print(log(2, a))
+    print(sin(b))
+    print(cos(b))
+    print(tan(b))
