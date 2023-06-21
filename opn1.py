@@ -300,7 +300,7 @@ def ln(opn=(), out_accuracy=default_precision):
         new_opn = (head, tail)
         return new_opn
     else:
-        sys.exit('Error: OPNs{} should be positive and '
+        sys.exit('Error: For ln() operation, OPNs{} should be positive and '
                  'satisfying the first term is greater than the second term!'.format(opn))
 
 
@@ -308,10 +308,10 @@ def log(real_number, opn=(), out_accuracy=default_precision):
     if real_number > 0 and real_number != 1 and ln(opn):
         return scalar_multi(math.log(real_number) ** (-1), ln(opn), )
     else:
-        sys.exit('Error: 对于该OPNs的操作ln{}是不存在的；或实数不满足条件：大于0且不等于1'.format(opn))
+        sys.exit('Error: 对于该OPNs的操作log{}是不存在的；或实数不满足条件：大于0且不等于1'.format(opn))
 
 
-'''4. Trigonometric functions of OPNs'''
+'''4.1 Trigonometric functions of OPNs'''
 
 
 def sin(opn=(), out_accuracy=default_precision):
@@ -328,7 +328,7 @@ def cos(opn=(), out_accuracy=default_precision):
     return new_opn
 
 
-def tan(opn=(), out_accuracy=default_precision):
+def tan_re(opn=(), out_accuracy=default_precision):
     head1 = math.sin(opn[0]) * math.cos(opn[0])
     head2 = math.sin(opn[1]) * math.cos(opn[1])
     tail1 = ((math.cos(opn[0])) ** 2) * ((math.cos(opn[1])) ** 2)
@@ -337,6 +337,54 @@ def tan(opn=(), out_accuracy=default_precision):
     second_entry = head2 / (tail1 - tail2)
     new_opn = (first_entry, second_entry)
     return new_opn
+
+
+def tan(opn=()):
+    head1 = math.tan(opn[0]) * (1 + math.tan(opn[1]) ** 2)
+    head2 = math.tan(opn[1]) * (1 + math.tan(opn[0]) ** 2)
+    tail = 1 - (math.tan(opn[0]) ** 2) * (math.tan(opn[1]) ** 2)
+    first_entry = head1 / tail
+    second_entry = head2 / tail
+    new_opn = (first_entry, second_entry)
+    return new_opn
+
+
+def cot(opn=()):
+    head1 = math.tan(opn[0]) * (1 + math.tan(opn[1]) ** 2)
+    head2 = math.tan(opn[1]) * (1 + math.tan(opn[0]) ** 2)
+    tail1 = math.tan(opn[0]) ** 2 - math.tan(opn[1]) ** 2
+    tail2 = math.tan(opn[1]) ** 2 - math.tan(opn[0]) ** 2
+    first_entry = head1 / tail1
+    second_entry = head2 / tail2
+    new_opn = (first_entry, second_entry)
+    return new_opn
+
+
+'''4.2 Inverse Trigonometric Functions of OPNs'''
+
+
+def asin(opn=()):
+    if -1 <= opn[0] + opn[1] <= 1 and -1 <= opn[0] - opn[1] <= 1:
+        first_entry = 0.5 * (math.asin(opn[0] + opn[1]) + math.asin(opn[0] - opn[1]))
+        second_entry = 0.5 * (math.asin(opn[0] + opn[1]) - math.asin(opn[0] - opn[1]))
+        new_opn = (first_entry, second_entry)
+        return new_opn
+    else:
+        sys.exit('Error: For asin() operation, OPNs{} should satisfy -1 ≤ ux + vx ≤ 1 and -1 ≤ ux - vx ≤ 1'.format(opn))
+
+
+def acos(opn=()):
+    if -1 <= opn[0] + opn[1] <= 1 and -1 <= opn[0] - opn[1] <= 1:
+        first_entry = 0.5 * (math.acos(opn[0] + opn[1]) + math.acos(opn[0] - opn[1])) + math.pi / 2
+        second_entry = 0.5 * (math.acos(opn[0] + opn[1]) - math.acos(opn[0] - opn[1])) + math.pi / 2
+        new_opn = (first_entry, second_entry)
+        return new_opn
+    else:
+        sys.exit('Error: For acos() operation, OPNs{} should satisfy -1 ≤ ux + vx ≤ 1 and -1 ≤ ux - vx ≤ 1'.format(opn))
+
+
+# def atan(opn=()):
+#
 
 
 '''Total order on the set of OPNs'''
