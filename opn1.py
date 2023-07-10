@@ -250,22 +250,22 @@ def root(opn=(), n=2.0, out_accuracy=default_precision):
     if n % 1 != 0:
         sys.exit("不规范的开根\'{}\': 该运算规则root()仅支持开整数根!".format(n))
     elif n % 2 == 1:
-        head = 0.5 * tran(inverse_fun(opn[0]) + inverse_fun(opn[1]), 1 / n)
-        tail = 0.5 * tran(inverse_fun(opn[0]) - inverse_fun(opn[1]), 1 / n)
-        first_entry = applied_fun(head + tail)
-        second_entry = applied_fun(head - tail)
+        head = 0.5 * tran(opn[0] + opn[1], 1 / n)
+        tail = 0.5 * tran(opn[0] - opn[1], 1 / n)
+        first_entry = head + tail
+        second_entry = head - tail
         new_opn = (first_entry, second_entry)
         return new_opn
-    elif n % 2 == 0 and opn[0] >= opn[1] and opn[0] + opn[1] <= 1:
-        head = 0.5 * ((-inverse_fun(opn[0]) - inverse_fun(opn[1])) ** (1 / n))
-        tail = 0.5 * ((inverse_fun(opn[0]) - inverse_fun(opn[1])) ** (1 / n))
-        first_entry = applied_fun(head + tail)
-        second_entry = applied_fun(head - tail)
+    elif n % 2 == 0 and opn[0] + opn[1] <= 1 and opn[0] >= opn[1]:
+        head = 0.5 * ((-opn[0] - opn[1]) ** (1 / n))
+        tail = 0.5 * ((opn[0] - opn[1]) ** (1 / n))
+        first_entry = head + tail
+        second_entry = head - tail
         new_opn = (first_entry, second_entry)
         return new_opn
     else:
-        sys.exit("Error: When n is even, if opn is non-negative or non-neutral or "
-                 "the first term of OPN is smaller than the second term, the opn {} cannot open roots!".format(opn))
+        sys.exit("Error: When n is even, if opn is negative, or the first term of OPN is smaller than the second term,"
+                 "the opn {} cannot open roots!".format(opn))
 
 
 def square(opn=(), out_accuracy=default_precision):
