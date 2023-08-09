@@ -641,6 +641,14 @@ def mat_div(opn: tuple, mat):  # 单个opn除以一个opn矩阵
     return new_mat
 
 
+def mat_add(opn: tuple, mat):  # 单个opn加一个opn矩阵
+    new_mat = [[opn for x in range(len(mat[0]))] for x in range(len(mat))]
+    for i in range(len(mat)):
+        for j in range(len(mat[0])):
+            new_mat[i][j] = add(opn, mat[i][j])
+    return new_mat
+
+
 def distance(opn1: tuple, opn2: tuple):  # 求两个opn的距离
     dis = sub(opn1, opn2) if max(sub(opn1, opn2), zero) == sub(opn1, opn2) else sub(opn2, opn1)
     return dis
