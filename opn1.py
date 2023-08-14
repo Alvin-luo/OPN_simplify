@@ -281,7 +281,7 @@ def square(opn=(), out_accuracy=default_precision):
 
 def e_exp(opn=(), out_accuracy=default_precision):
     head = (math.e ** opn[0] - math.e ** (-opn[0])) / (2 * (math.e ** opn[1]))
-    tail = (math.e ** opn[0] + math.e ** (-opn[0])) / (2 * (math.e ** opn[1]))
+    tail = -(math.e ** opn[0] + math.e ** (-opn[0])) / (2 * (math.e ** opn[1]))
     new_opn = (head, tail)
     return new_opn
 
@@ -633,6 +633,30 @@ def exp_mat(mat):
     return new_mat
 
 
+def mat_scalar_op(scalar, mat, operator='+'):  # 矩阵标量运算，实现一个opn或一个实数与矩阵的标量运算
+    try:
+        algorithm_dict = {'+': add, '-': sub, '*': multi, '/': div}
+        algorithm = algorithm_dict[operator]
+        if isinstance(scalar, (int, float)):
+            opn = scalar_multi(scalar, one)
+            new_mat = [[opn for x in range(len(mat[0]))] for x in range(len(mat))]
+            for i in range(len(mat)):
+                for j in range(len(mat[0])):
+                    new_mat[i][j] = algorithm(opn, mat[i][j])
+            return new_mat
+        elif type(scalar) == tuple:
+            if len(scalar) == 2:
+                new_mat = [[scalar for x in range(len(mat[0]))] for x in range(len(mat))]
+                for i in range(len(mat)):
+                    for j in range(len(mat[0])):
+                        new_mat[i][j] = algorithm(scalar, mat[i][j])
+                return new_mat
+        else:
+            sys.exit('This method can only implement a scalar operation between an opn (or a real number) and a matrix')
+    except Exception as e:
+        sys.exit(e)
+
+
 def mat_div(opn: tuple, mat):  # 单个opn除以一个opn矩阵
     new_mat = [[opn for x in range(len(mat[0]))] for x in range(len(mat))]
     for i in range(len(mat)):
@@ -678,40 +702,6 @@ def gauss_inv(matrix):
 
 def euclidean_dis(opn1, opn2):
     return math.pow(math.pow(opn1[0] - opn2[0], 2) + math.pow(opn1[1] - opn2[1], 2), 0.5)
-
-
-def lr_accuracy(dw, test_set, label_set, pri=False):
-    if len(test_set) != len(label_set):
-        sys.exit('The number of samples in the test set does not match the number of label values')
-    init_predict = mat_multi(test_set, dw)
-    correct_num = 0
-    err_num = 0
-    pre_list = [0 for i in range(len(init_predict))]
-    ori_list = [0 for i in range(len(init_predict))]
-    for i in range(len(init_predict)):
-        if init_predict[i][0][0] > 0 and init_predict[i][0][1] > 0:
-            pre_list[i] = 0
-        elif init_predict[i][0][0] > 0 and init_predict[i][0][1] < 0:
-            pre_list[i] = 1
-        elif init_predict[i][0][0] < 0 and init_predict[i][0][1] < 0:
-            pre_list[i] = 3
-        else:
-            pre_list[i] = 2
-        if label_set[i][0][0] > 0 and label_set[i][0][1] > 0:
-            ori_list[i] = 0
-        elif label_set[i][0][0] > 0 and label_set[i][0][1] < 0:
-            ori_list[i] = 1
-        elif label_set[i][0][0] < 0 and label_set[i][0][1] < 0:
-            ori_list[i] = 3
-        else:
-            ori_list[i] = 2
-        if ori_list[i] == pre_list[i]:
-            correct_num += 1
-        else:
-            err_num += 1
-        if pri:
-            print(pre_list[i], ori_list[i])
-    return correct_num / len(init_predict)
 
 
 """测试用例"""
