@@ -17,7 +17,7 @@ nSlope = initialValue[0]
 ksi = initialValue[1]
 default_precision = initialValue[2]
 sign = initialValue[3]
-flag = initialValue[4]
+# flag = initialValue[4]
 
 '''φ函数及其逆函数'''
 '''该函数用递归方式定义，考虑到真实数据的分布可能在一定范围内，在调用时可将φ函数中的参数存储起来'''
@@ -49,7 +49,6 @@ def applied_fun(x, first_call=True, out_accuracy=17):
             nSlope, ksi = initialValue[0], initialValue[1]
             return index3
     except Exception as e:
-        print('Error:')
         sys.exit(e)
 
 
@@ -96,7 +95,6 @@ def inverse_fun(x, first_call=True, accur=False, out_accuracy=17):
             nSlope, ksi = initialValue[0], initialValue[1]
             return index3
     except Exception as e:
-        print('Error:')
         sys.exit(e)
 
 
@@ -447,36 +445,39 @@ def min(*args):
         return min_opn
 
 
-def order(opn_list, start=0, end=sign, reverse=False):  # 传入一组opns，默认按照升序对整个数组[start:len(opn_list) - 1]进行排序
-    global flag
-    if end == sign:
-        end = len(opn_list) - 1
-    if flag:
-        if start < 0 or start >= len(opn_list) - 1 or end >= len(opn_list) or start >= end or end <= 0:
-            sys.exit('Error: Array start position \'{}\' or end position \'{}\' is not standard!'.format(start, end))
-    flag = False
+def sorted(opn_list, start=0, end=sign, reverse=False, flag=True):  # 传入一组opns，并在原始数组上按照升序对数组[start:end]进行排序
+    try:
+        if end == sign:
+            end = len(opn_list) - 1
+        if flag:
+            if start < 0 or start >= len(opn_list) - 1 or end >= len(opn_list) or start >= end or end <= 0:
+                sys.exit(
+                    'Error: Array start position \'{}\' or end position \'{}\' is not standard!'.format(start, end))
+        flag = False
 
-    def partition(sublist, low, high):
-        pivot = sublist[low]
-        while low < high:
-            while low < high and sublist[high] == compare(sublist[high], pivot)[1]:
-                high = high - 1
-            sublist[low] = sublist[high]
-            while low < high and sublist[low] == compare(sublist[low], pivot)[0]:
-                low = low + 1
-            sublist[high] = sublist[low]
-        sublist[low] = pivot
-        return low
+        def partition(sublist, low, high):
+            pivot = sublist[low]
+            while low < high:
+                while low < high and sublist[high] == compare(sublist[high], pivot)[1]:
+                    high = high - 1
+                sublist[low] = sublist[high]
+                while low < high and sublist[low] == compare(sublist[low], pivot)[0]:
+                    low = low + 1
+                sublist[high] = sublist[low]
+            sublist[low] = pivot
+            return low
 
-    if start < end:
-        pivotpos = partition(opn_list, start, end)
-        order(opn_list, start, pivotpos - 1)
-        order(opn_list, pivotpos + 1, end)
-        if reverse:
-            opn_list.reverse()
-            return opn_list
-        else:
-            return opn_list
+        if start < end:
+            pivotpos = partition(opn_list, start, end)
+            sorted(opn_list, start, pivotpos - 1, flag=flag)
+            sorted(opn_list, pivotpos + 1, end, flag=flag)
+            if reverse:
+                opn_list.reverse()
+                return opn_list
+            else:
+                return opn_list
+    except Exception as e:
+        sys.exit(e)
 
 
 '''矩阵运算'''
