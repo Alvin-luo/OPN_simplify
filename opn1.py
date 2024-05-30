@@ -19,6 +19,14 @@ default_precision = initialValue[2]
 sign = initialValue[3]
 # flag = initialValue[4]
 
+'''自定义异常类'''
+
+
+class CustomError(Exception):
+    def __init__(self, message):
+        self.message = message
+
+
 '''φ函数及其逆函数'''
 '''该函数用递归方式定义，考虑到真实数据的分布可能在一定范围内，在调用时可将φ函数中的参数存储起来'''
 '''out_accuracy为浮点数输出精度，保留小数的位数'''
@@ -146,14 +154,14 @@ def multi_fun(interval_number1, interval_number2):
 '''1. Arithmetic operations of OPNs'''
 
 
-def scalar_multi(real_number, opn=(), out_accuracy=default_precision):
+def scalar_multi(real_number, opn=()):
     head = scalar_multi_fun(real_number, opn[0])
     tail = scalar_multi_fun(real_number, opn[1])
     new_opn = (head, tail)
     return new_opn
 
 
-def add(*args, out_accuracy=default_precision):  # 传入两个及以上的opns或一个包含两个及以上opns的数组
+def add(*args):  # 传入两个及以上的opns或一个包含两个及以上opns的数组
     if len(args) == 1:
         opn_list = args[0]
     else:
@@ -167,7 +175,7 @@ def add(*args, out_accuracy=default_precision):  # 传入两个及以上的opns�
     return new_opn
 
 
-def multi(*args, out_accuracy=default_precision):
+def multi(*args):
     if len(args) == 1:
         opn_list = args[0]
     else:
@@ -187,7 +195,7 @@ def multi(*args, out_accuracy=default_precision):
     return new_opn
 
 
-def sub(opn1=(), opn2=(), out_accuracy=default_precision):
+def sub(opn1=(), opn2=()):
     new_opn = add(opn1, scalar_multi(-1, opn2))
     return new_opn
 
@@ -204,9 +212,9 @@ def sub(opn1=(), opn2=(), out_accuracy=default_precision):
 #         return new_opn
 
 
-def neg_power(opn=(), out_accuracy=default_precision):
+def neg_power(opn=()):
     if opn[0] == opn[1] or opn[0] == -opn[1]:
-        sys.exit('The multiplication inverse of this OPN {} does not exist'.format(opn))
+        raise CustomError('The multiplication inverse of this OPN {} does not exist'.format(opn))
     else:
         first_entry = opn[0] / (opn[0] ** 2 - opn[1] ** 2)
         second_entry = opn[1] / (opn[1] ** 2 - opn[0] ** 2)
@@ -214,7 +222,7 @@ def neg_power(opn=(), out_accuracy=default_precision):
         return new_opn
 
 
-def div(opn1=(), opn2=(), out_accuracy=default_precision):
+def div(opn1=(), opn2=()):
     new_opn = multi(opn1, neg_power(opn2))
     return new_opn
 
@@ -222,13 +230,13 @@ def div(opn1=(), opn2=(), out_accuracy=default_precision):
 '''2. Power and nth root of OPNs'''
 
 
-def power(opn=(), n=2.0, out_accuracy=default_precision):
+def power(opn=(), n=2.0):
     if n % 1 != 0:
-        sys.exit('不规范的次方\'{}\': 该运算规则power()仅支持整数次方!'.format(n))
+        raise CustomError('不规范的次方\'{}\': 该运算规则power()仅支持整数次方!'.format(n))
     if n == 1:
         return opn
     elif n < 0 and (opn[0] == -opn[1] or opn[0] == opn[1]):
-        sys.exit('The multiplication inverse of this OPN {} does not exist'.format(opn))
+        raise CustomError('The multiplication inverse of this OPN {} does not exist'.format(opn))
     else:
         head = (((-1) ** (n + 1)) / 2) * ((opn[0] + opn[1]) ** n)
         tail = 0.5 * ((opn[0] - opn[1]) ** n)
@@ -238,7 +246,7 @@ def power(opn=(), n=2.0, out_accuracy=default_precision):
         return new_opn
 
 
-def root(opn=(), n=2.0, out_accuracy=default_precision):
+def root(opn=(), n=2.0):
     def tran(x, m):
         if x < 0:
             return -math.pow(-x, m)
@@ -246,7 +254,7 @@ def root(opn=(), n=2.0, out_accuracy=default_precision):
             return math.pow(x, m)
 
     if n % 1 != 0:
-        sys.exit("不规范的开根\'{}\': 该运算规则root()仅支持开整数根!".format(n))
+        raise CustomError("不规范的开根\'{}\': 该运算规则root()仅支持开整数根!".format(n))
     elif n % 2 == 1:
         head = 0.5 * tran(opn[0] + opn[1], 1 / n)
         tail = 0.5 * tran(opn[0] - opn[1], 1 / n)
@@ -262,11 +270,12 @@ def root(opn=(), n=2.0, out_accuracy=default_precision):
         new_opn = (first_entry, second_entry)
         return new_opn
     else:
-        sys.exit("Error: When n is even, if opn is negative, or the first term of OPN is smaller than the second term,"
-                 "the opn {} cannot open roots!".format(opn))
+        raise CustomError(
+            "Error: When n is even, if opn is negative, or the first term of OPN is smaller than the second term,"
+            "the opn {} cannot open roots!".format(opn))
 
 
-def square(opn=(), out_accuracy=default_precision):
+def square(opn=()):
     head = -2 * opn[0] * opn[1]
     tail = -opn[0] ** 2 - opn[1] ** 2
     # tail = -(opn[0] ** 2 + opn[1] ** 2)
@@ -277,56 +286,56 @@ def square(opn=(), out_accuracy=default_precision):
 '''3. Exponentiation and logarithm of OPNs'''
 
 
-def e_exp(opn=(), out_accuracy=default_precision):
+def e_exp(opn=()):
     head = (math.e ** opn[0] - math.e ** (-opn[0])) / (2 * (math.e ** opn[1]))
     tail = -(math.e ** opn[0] + math.e ** (-opn[0])) / (2 * (math.e ** opn[1]))
     new_opn = (head, tail)
     return new_opn
 
 
-def exp(real_number, opn=(), out_accuracy=default_precision):
+def exp(real_number, opn=()):
     if real_number > 0:
         return e_exp(scalar_multi(math.log(real_number), opn))
     else:
-        sys.exit('Error: the real number \'{}\' should be greater than 0'.format(real_number))
+        raise CustomError('Error: the real number \'{}\' should be greater than 0'.format(real_number))
 
 
-def ln(opn=(), out_accuracy=default_precision):
+def ln(opn=()):
     if opn[0] + opn[1] < 0 and opn[0] > opn[1]:
         head = 0.5 * math.log((opn[1] - opn[0]) / (opn[1] + opn[0]))
         tail = -0.5 * math.log(opn[1] ** 2 - opn[0] ** 2)
         new_opn = (head, tail)
         return new_opn
     else:
-        sys.exit('Error: For ln() operation, OPNs{} should be positive and '
-                 'satisfying the first term is greater than the second term!'.format(opn))
+        raise CustomError('Error: For ln() operation, OPNs{} should be positive and '
+                          'satisfying the first term is greater than the second term!'.format(opn))
 
 
-def log(real_number, opn=(), out_accuracy=default_precision):
+def log(real_number, opn=()):
     if real_number > 0 and real_number != 1 and ln(opn):
         return scalar_multi(math.log(real_number) ** (-1), ln(opn), )
     else:
-        sys.exit('Error: 对于该OPNs的操作log{}是不存在的；或实数不满足条件：大于0且不等于1'.format(opn))
+        raise CustomError('Error: 对于该OPNs的操作log{}是不存在的；或实数不满足条件：大于0且不等于1'.format(opn))
 
 
 '''4.1 Trigonometric functions of OPNs'''
 
 
-def sin(opn=(), out_accuracy=default_precision):
+def sin(opn=()):
     head = math.sin(opn[0]) * math.cos(opn[1])
     tail = math.cos(opn[0]) * math.sin(opn[1])
     new_opn = (head, tail)
     return new_opn
 
 
-def cos(opn=(), out_accuracy=default_precision):
+def cos(opn=()):
     head = math.sin(opn[0]) * math.sin(opn[1])
     tail = - math.cos(opn[0]) * math.cos(opn[1])
     new_opn = (head, tail)
     return new_opn
 
 
-def tan_re(opn=(), out_accuracy=default_precision):
+def tan_re(opn=()):
     head1 = math.sin(opn[0]) * math.cos(opn[0])
     head2 = math.sin(opn[1]) * math.cos(opn[1])
     tail1 = ((math.cos(opn[0])) ** 2) * ((math.cos(opn[1])) ** 2)
@@ -368,7 +377,8 @@ def asin(opn=()):
         new_opn = (first_entry, second_entry)
         return new_opn
     else:
-        sys.exit('Error: For asin() operation, OPNs{} should satisfy -1 ≤ ux + vx ≤ 1 and -1 ≤ ux - vx ≤ 1'.format(opn))
+        raise CustomError(
+            'Error: For asin() operation, OPNs{} should satisfy -1 ≤ ux + vx ≤ 1 and -1 ≤ ux - vx ≤ 1'.format(opn))
 
 
 def acos(opn=()):
@@ -378,7 +388,8 @@ def acos(opn=()):
         new_opn = (first_entry, second_entry)
         return new_opn
     else:
-        sys.exit('Error: For acos() operation, OPNs{} should satisfy -1 ≤ ux + vx ≤ 1 and -1 ≤ ux - vx ≤ 1'.format(opn))
+        raise CustomError(
+            'Error: For acos() operation, OPNs{} should satisfy -1 ≤ ux + vx ≤ 1 and -1 ≤ ux - vx ≤ 1'.format(opn))
 
 
 # def atan(opn=()):
@@ -451,7 +462,7 @@ def sorted(opn_list, start=0, end=sign, reverse=False, flag=True):  # 传入一�
             end = len(opn_list) - 1
         if flag:
             if start < 0 or start >= len(opn_list) - 1 or end >= len(opn_list) or start >= end or end <= 0:
-                sys.exit(
+                raise CustomError(
                     'Error: Array start position \'{}\' or end position \'{}\' is not standard!'.format(start, end))
         flag = False
 
@@ -543,7 +554,7 @@ def mat_multi(mat_1, mat_2):  # 该方法能实现两个矩阵相乘以及单个
                     multi_mat[i][j] = multi(mat_1, mat_2[i][j])
             return multi_mat
         elif len(mat_1[0]) != len(mat_2):
-            sys.exit('矩阵1的列数和矩阵2行数大小不匹配！')
+            raise CustomError('矩阵1的列数和矩阵2行数大小不匹配！')
         else:
             multi_mat = [[zero for x in range(len(mat_2[0]))] for x in range(len(mat_1))]
             for i in range(len(multi_mat)):
@@ -561,7 +572,7 @@ def mat_multi(mat_1, mat_2):  # 该方法能实现两个矩阵相乘以及单个
 def mat_pop(mat_1, mat_2, operator='+'):  # 矩阵点运算
     try:
         if len(mat_1) != len(mat_2) and len(mat_1[0]) != len(mat_2[0]):
-            sys.exit('The shapes of the two matrices do not match!')
+            raise CustomError('The shapes of the two matrices do not match!')
         algorithm_dict = {'+': add, '-': sub, '*': multi, '/': div}
         algorithm = algorithm_dict[operator]
         new_mat = [[zero for x in range(len(mat_1[0]))] for x in range(len(mat_1))]
@@ -653,7 +664,8 @@ def mat_scalar_op(scalar, mat, operator='+'):  # 矩阵标量运算，实现一�
                         new_mat[i][j] = algorithm(scalar, mat[i][j])
                 return new_mat
         else:
-            sys.exit('This method can only implement a scalar operation between an opn (or a real number) and a matrix')
+            raise CustomError(
+                'This method can only implement a scalar operation between an opn (or a real number) and a matrix')
     except Exception as e:
         sys.exit(e)
 
